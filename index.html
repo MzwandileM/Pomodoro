@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <title>Pomodoro App</title>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav_container">
+                <div class="right_nav">
+                    <button>Pomodoro</button>
+                </div>
+                <div class="left_nav">
+                    <button id="todo_btn">
+                        <i class='bx bx-list-check'></i>
+                    </button>
+
+                    <button id="settings_btn">
+                        <i class='bx bx-cog'></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <div class="timer">
+            <div class="timer_modes">
+                <button id="focus">Focus</button>
+                <button id="short_break">Short Break</button>
+                <button id="long_break">Long Break</button>
+            </div>
+            <div class="timer_display">
+
+                <svg class="timer_ring" viewBox="0 0 300 300">
+                    <circle
+                        class="timer_ring_bg"
+                        cx="150"
+                        cy="150"
+                        r="136"
+                    />
+                    <circle
+                        class="timer_ring_progress"
+                        cx="150"
+                        cy="150"
+                        r="136"
+                    />
+                </svg>
+                <span id="timer_text">25:00</span>
+            </div>
+            <div class="timer_controls">
+                <button id="start_timer">
+                    <i class="bx bx-play"></i>
+                    Start
+                </button>
+            </div>
+            <div class="stop_confirm_modal hidden" id="stop_confirm_modal">
+                <div class="stop_confirm_content">
+                    <p>Current session will be stopped</p>
+
+                    <div class="stop_confirm_actions">
+                        <button id="cancel_stop">Cancel</button>
+                        <button id="confirm_stop">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings_modal" id="settings_modal">
+            <div class="appearance">
+                <h3>Appearance</h3>
+
+                <div class="select_mode">
+                    <label for="modes">
+                        <i class="bx bx-image"></i>
+                        Appearance
+                    </label>
+
+                    <select name="modes" id="modes">
+                        <option value="dark">Dark</option>
+                        <option value="light">Light</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="timer_settings">
+                <h3>Timer</h3>
+
+                <div class="focus" id="focus_setting">
+                    <i class="bx bx-brain"></i>
+                    <span>Focus</span>
+                    <button class="add" type="button">+</button>
+                    <span id="focus_duration">25 min</span>
+                    <button class="minus" type="button">-</button>
+                </div>
+
+                <div class="short_break" id="short_break_setting">
+                    <i class="bx bx-chair"></i>
+                    <span>Short Break</span>
+                    <button class="add" type="button">+</button>
+                    <span id="short_break_duration">5 min</span>
+                    <button class="minus" type="button">-</button>
+                </div>
+
+                <div class="long_break" id="long_break_setting">
+                    <i class="bx bx-coffee-togo"></i>
+                    <span>Long Break</span>
+                    <button class="add" type="button">+</button>
+                    <span id="long_break_duration">15 min</span>
+                    <button class="minus" type="button">-</button>
+                </div>
+
+                <div class="auto_focus">
+                    <i class="bx bx-brain"></i>
+                    <span>Auto Start Focus</span>
+                    <button type="button" id="auto_focus_btn">
+                        <i class="bx bx-toggle-left"></i>
+                    </button>
+                </div>
+
+                <div class="auto_break">
+                    <i class="bx bx-coffee-togo"></i>
+                    <span>Auto Start Break</span>
+                    <button type="button" id="auto_break_btn">
+                        <i class="bx bx-toggle-left"></i>
+                    </button>
+                </div>
+                <div class="setting_row long_break_auto">
+                    <div class="setting_header">
+                        <i class="bx bx-repeat"></i>
+                        <span>Auto Start Long Break</span>
+
+                        <button type="button" id="auto_long_break_btn">
+                            <i class="bx bx-toggle-left"></i>
+                        </button>
+                    </div>
+
+                    <div class="long_break_option">
+                        <span>After</span>
+
+                        <select id="long_break_after">
+                            <option value="1">1 Pomodoro</option>
+                            <option value="2">2 Pomodoros</option>
+                            <option value="3">3 Pomodoros</option>
+                            <option value="4">4 Pomodoros</option>
+                            <option value="5">5 Pomodoros</option>
+                            <option value="6">6 Pomodoros</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="alarm">
+                    <div class="setting_header">
+                        <i class="bx bx-bell"></i>
+                        <span>Alarm</span>
+
+                        <button type="button" id="alarm_btn">
+                            <i class="bx bx-toggle-left"></i>
+                        </button>
+                    </div>
+
+                    <div class="alarm_sounds" id="alarm_sounds">
+                        <button type="button" data-sound="beep">Beep</button>
+                        <button type="button" data-sound="bell">Bell</button>
+                        <button type="button" data-sound="chime">Chime</button>
+                    </div>
+                </div>
+                <div class="reset_default">
+                    <i class='bx bx-reset'></i>
+                    <span>Reset To Default</span>
+                    <button type="button" id="reset_default_btn">
+                        Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="todo_modal" id="todo_modal">
+            <div class="progress_bar">
+                <h3>Tasks</h3>
+                <p id="task_progress">0/0</p>
+            </div>
+            <div class="add_task">
+                <div class="task_input">
+                    <input type="text" id="task" placeholder="Add task...">
+                    <button type="button" class="calendar_btn" id="calendar_btn">
+                        <i class='bx bx-calendar'></i>
+                    </button>
+                    <span class="selected_date" id="selected_date"></span>
+                </div>
+                <input type="date" id="task_date">
+                <button class="add_task_btn" type="button" id="add_task_btn">Add</button>
+            </div>
+            <div class="task_pomo_modal hidden" id="task_pomo_modal">
+                <div class="task_pomo_content">
+                    <h3>Complete task after</h3>
+
+                    <select id="pomo_target">
+                        <option value="1">1 Pomodoro</option>
+                        <option value="2">2 Pomodoros</option>
+                        <option value="3">3 Pomodoros</option>
+                        <option value="4">4 Pomodoros</option>
+                        <option value="5">5 Pomodoros</option>
+                        <option value="6">6 Pomodoros</option>
+                        <option value="7">7 Pomodoros</option>
+                        <option value="8">8 Pomodoros</option>
+                    </select>
+                </div>
+            </div>
+            <div class="task_schedule">
+                <div class="today">
+                    <i class='bx bxs-sun' ></i>
+                    <span>Today</span>
+                    <p id="today_count">0</p>
+                    <div class="task_list" id="today_tasks">
+                        <!-- Tasks will be displayed here -->
+                    </div>
+                </div>
+                <div class="tomorrow">
+                    <i class='bx bx-moon'></i>
+                    <span>Tomorrow</span>
+                    <p id="tomorrow_count">0</p>
+                    <div class="task_list" id="tomorrow_tasks">
+                        <!-- Tasks will be displayed here -->   
+                    </div>
+                </div>
+                <div class="this_week">
+                    <i class='bx bxs-calendar' ></i>
+                    <span>This Week</span>
+                    <p id="this_week_count">0</p>
+                    <div class="task_list" id="this_week_tasks">
+                        <!-- Tasks will be displayed here -->
+                    </div>
+                </div>
+                <div class="planned">
+                    <i class='bx bx-calendar-check'></i>
+                    <span>Planned</span>
+                    <p id="planned_count">0</p>
+                    <div class="task_list" id="planned_tasks">
+                        <!-- Tasks will be displayed here -->
+                    </div>
+                </div>
+                <div class="overdue">
+                    <i class='bx bx-error'></i>
+                    <span>Overdue</span>
+                    <p id="overdue_count">0</p>
+
+                    <div class="task_list" id="overdue_tasks">
+                        <!-- Tasks will be displayed here -->
+                    </div>
+                </div>
+                <div class="completed">
+                    <i class='bx bx-check-circle'></i>
+                    <span>Completed</span>
+                    <p id="completed_count">0</p>
+                    <div class="task_list" id="completed_tasks">
+                        <!-- Tasks will be displayed here -->   
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="app.js"></script>
+</body>
+</html>
