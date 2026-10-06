@@ -86,6 +86,8 @@ let timerInterval = null;
 let timerSeconds = timerDurations.focus * 60;
 let currentMode = "focus";
 let isTimerRunning = false;
+
+let timerEndTime = null;
 let pendingMode = null;
 
 const defaultTimerDurations = {
@@ -207,7 +209,7 @@ focusAdd.addEventListener("click", () => {
 });
 
 focusMinus.addEventListener("click", () => {
-  if (timerDurations.focus <= 1) return;
+  if (timerDurations.focus <= 5) return;
 
   timerDurations.focus--;
   updateTimerDuration("focus", timerDurations.focus);
@@ -222,7 +224,7 @@ shortBreakAdd.addEventListener("click", () => {
 });
 
 shortBreakMinus.addEventListener("click", () => {
-  if (timerDurations.short_break <= 1) return;
+  if (timerDurations.short_break <= 5) return;
 
   timerDurations.short_break--;
   updateTimerDuration("short_break", timerDurations.short_break);
@@ -237,7 +239,7 @@ longBreakAdd.addEventListener("click", () => {
 });
 
 longBreakMinus.addEventListener("click", () => {
-  if (timerDurations.long_break <= 1) return;
+  if (timerDurations.long_break <= 5) return;
 
   timerDurations.long_break--;
   updateTimerDuration("long_break", timerDurations.long_break);
@@ -478,6 +480,7 @@ function setTimerMode(mode) {
 
   timerInterval = null;
   isTimerRunning = false;
+  timerEndTime = null;
 
   currentMode = mode;
   timerSeconds = timerDurations[mode] * 60;
@@ -504,6 +507,8 @@ function updateTimerDisplay() {
 
   timerText.textContent = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 
+  document.title = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")} | Pomodoro`;
+
   const totalSeconds = timerDurations[currentMode] * 60;
 
   const progress = Math.max(0, Math.min(1, timerSeconds / totalSeconds));
@@ -516,6 +521,7 @@ function stopTimer() {
 
   timerInterval = null;
   isTimerRunning = false;
+  timerEndTime = null;
 
   timerSeconds = timerDurations[currentMode] * 60;
 
@@ -536,7 +542,13 @@ cancelStopBtn.addEventListener("click", () => {
 
 confirmStopBtn.addEventListener("click", () => {
   stopConfirmModal.classList.add("hidden");
+
   stopTimer();
+
+  if (pendingMode) {
+    setTimerMode(pendingMode);
+    pendingMode = null;
+  }
 });
 
 let sessionCounts = JSON.parse(localStorage.getItem("sessionCounts")) || {
@@ -552,11 +564,7 @@ function updateSessionCounts() {
 }
 
 function shouldStartLongBreak() {
-  return (
-    autoStartLongBreak &&
-    sessionCounts.focus > 0 &&
-    sessionCounts.focus % longBreakAfter === 0
-  );
+  return sessionCounts.focus > 0 && sessionCounts.focus % longBreakAfter === 0;
 }
 
 function completeTimer() {
@@ -635,6 +643,9 @@ function completeTimer() {
 function startTimer() {
   isTimerRunning = true;
 
+  // Calculate when the timer should finish
+  timerEndTime = Date.now() + timerSeconds * 1000;
+
   startTimerBtn.innerHTML = "<i class='bx bx-pause'></i> Pause";
 
   if (!document.getElementById("stop_timer")) {
@@ -651,14 +662,19 @@ function startTimer() {
   }
 
   timerInterval = setInterval(() => {
-    timerSeconds--;
+    const remainingMilliseconds = timerEndTime - Date.now();
 
-    updateTimerDisplay();
+    timerSeconds = Math.ceil(remainingMilliseconds / 1000);
 
     if (timerSeconds <= 0) {
+      timerSeconds = 0;
+      updateTimerDisplay();
       completeTimer();
+      return;
     }
-  }, 1000);
+
+    updateTimerDisplay();
+  }, 250);
 }
 
 // render tasks to the UI
